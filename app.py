@@ -1,66 +1,130 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 import pickle
+import numpy as np
 
-# -------------------
-# PAGE CONFIG
-# -------------------
+# ------------------------
+# PAGE
+# ------------------------
+
 st.set_page_config(
     page_title="Diabetes Risk Predictor",
     page_icon="🩺",
     layout="wide"
 )
 
-# -------------------
+# ------------------------
 # LOAD MODEL
-# -------------------
-model = pickle.load(open("diabetes_model.pkl", "rb"))
+# ------------------------
 
-# -------------------
-# CUSTOM CSS
-# -------------------
+with open("diabetes_model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+# ------------------------
+# LIGHT BLUE + WHITE THEME
+# ------------------------
+
 st.markdown("""
 <style>
 
-.stButton>button{
-width:100%;
-background:linear-gradient(90deg,#4F46E5,#7C3AED);
-color:white;
-font-size:18px;
-border-radius:10px;
-height:55px;
-border:none;
+/* Background */
+
+.stApp{
+background:linear-gradient(
+135deg,
+#E6F7FF,
+#FFFFFF
+);
 }
 
-.result{
-padding:20px;
+/* Title */
+
+h1{
+text-align:center;
+color:#0F172A;
+}
+
+/* Inputs */
+
+.stNumberInput input{
+
+background:white;
+
+color:black;
+
 border-radius:12px;
-background:#f2f6ff;
+
+}
+
+/* Button */
+
+.stButton>button{
+
+width:100%;
+
+height:55px;
+
+background:linear-gradient(
+90deg,
+#60A5FA,
+#BFDBFE
+);
+
+color:#0F172A;
+
+font-size:18px;
+
+font-weight:bold;
+
+border:none;
+
+border-radius:15px;
+
+}
+
+/* Result */
+
+div[data-testid="stAlert"]{
+
+border-radius:15px;
+
+}
+
+/* Tabs */
+
+button[data-baseweb="tab"]{
+
+background:white;
+
+border-radius:10px;
+
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------
-# TITLE
-# -------------------
+# ------------------------
+
 st.title("🩺 Diabetes Risk Predictor")
 
-tab1, tab2 = st.tabs(["🔎 Predict","📊 Dataset Insights"])
+tab1, tab2 = st.tabs([
+"🔎 Predict",
+"📊 Dataset Insights"
+])
 
-# ==========================
+# ======================
 # TAB 1
-# ==========================
+# ======================
+
 with tab1:
 
-    st.write(
-        "Enter patient's details below."
+    st.subheader(
+        "Enter Patient Details"
     )
 
     col1, col2 = st.columns(2)
 
     with col1:
+
         pregnancies = st.number_input(
             "Pregnancies",
             0,
@@ -69,7 +133,7 @@ with tab1:
         )
 
         glucose = st.number_input(
-            "Glucose Level",
+            "Glucose",
             0,
             250,
             100
@@ -119,50 +183,62 @@ with tab1:
             0.50
         )
 
-    if st.button("🔍 Predict"):
+    if st.button(
+        "🔍 Predict Risk"
+    ):
 
-        input_data = np.array([[
-            pregnancies,
-            glucose,
-            bp,
-            skin,
-            insulin,
-            bmi,
-            dpf,
-            age
-        ]])
+        try:
 
-        prediction = model.predict(input_data)[0]
+            data = np.array([[
+                pregnancies,
+                glucose,
+                bp,
+                skin,
+                insulin,
+                bmi,
+                dpf,
+                age
+            ]])
 
-        probability = model.predict_proba(
-            input_data
-        )[0][1]
+            prediction = model.predict(
+                data
+            )[0]
 
-        st.divider()
+            probability = model.predict_proba(
+                data
+            )[0][1]
 
-        st.subheader("Prediction Result")
+            st.divider()
 
-        if prediction == 1:
-
-            st.error(
-                f"🔴 High Diabetes Risk ({probability*100:.1f}%)"
+            st.subheader(
+                "Prediction Result"
             )
 
-        else:
+            if prediction == 1:
 
-            st.success(
-                f"🟢 Low Diabetes Risk ({probability*100:.1f}%)"
+                st.error(
+                    f"🔴 High Diabetes Risk"
+                )
+
+            else:
+
+                st.success(
+                    f"🟢 Low Diabetes Risk"
+                )
+
+            st.write(
+                f"Risk Probability: {probability*100:.2f}%"
             )
 
-        st.progress(
-            float(probability)
-        )
+            st.progress(
+                float(probability)
+            )
 
-        st.subheader(
-            "Patient Summary"
-        )
+            st.subheader(
+                "Patient Summary"
+            )
 
-        st.info(
+            st.info(
 f"""
 Age: {age}
 
@@ -174,39 +250,45 @@ Blood Pressure: {bp}
 """
 )
 
-        st.subheader(
-            "Health Suggestions"
-        )
+            st.subheader(
+                "Health Suggestions"
+            )
 
-        if probability > 0.7:
+            if probability > 0.7:
 
-            st.warning("""
-• Exercise regularly
+                st.warning("""
+Reduce sugar intake
 
-• Reduce sugar intake
+Exercise daily
 
-• Drink more water
+Drink water
 
-• Consult doctor
+Consult doctor
 """)
 
-        elif probability > 0.4:
+            elif probability > 0.4:
 
-            st.info("""
-• Maintain healthy diet
+                st.info("""
+Maintain healthy diet
 
-• Monitor glucose
+Monitor glucose
 """)
 
-        else:
+            else:
 
-            st.success("""
-• Continue healthy habits
+                st.success("""
+Healthy lifestyle maintained
 """)
 
-# ==========================
+        except Exception as e:
+
+            st.error(
+                f"Error: {e}"
+            )
+
+# ======================
 # TAB 2
-# ==========================
+# ======================
 
 with tab2:
 
@@ -218,12 +300,14 @@ with tab2:
 Dataset:
 Pima Indians Diabetes Dataset
 
-Target:
-0 → No Diabetes
-1 → Diabetes
+Outcome:
+
+0 → Non Diabetic
+
+1 → Diabetic
 """)
 
-# FOOTER
+# ------------------------
 
 st.divider()
 
