@@ -25,7 +25,7 @@ except:
     st.stop()
 
 # -------------------------
-# HERO
+# HEADER
 # -------------------------
 
 st.title("🩺 Diabetes Risk Predictor")
@@ -34,14 +34,16 @@ st.subheader(
     "Predict Early • Stay Healthy"
 )
 
-st.write("""
+st.write(
+"""
 This application predicts diabetes risk based on patient health details.
-""")
+"""
+)
 
 st.divider()
 
 # -------------------------
-# INPUT SECTION
+# INPUTS
 # -------------------------
 
 col1, col2 = st.columns(2)
@@ -160,9 +162,7 @@ if st.button("🔍 Predict Risk"):
             float(probability)
         )
 
-        # -----------------
-        # SUMMARY
-        # -----------------
+        # ----------------
 
         st.subheader(
             "Patient Summary"
@@ -180,9 +180,67 @@ Blood Pressure: {bp}
 """
 )
 
-        # -----------------
-        # SUGGESTIONS
-        # -----------------
+        # ----------------
+
+        st.subheader(
+            "Health Status"
+        )
+
+        c1, c2, c3 = st.columns(3)
+
+        with c1:
+
+            if bmi < 18.5:
+                st.metric(
+                    "BMI",
+                    "Low"
+                )
+
+            elif bmi < 25:
+                st.metric(
+                    "BMI",
+                    "Normal"
+                )
+
+            else:
+                st.metric(
+                    "BMI",
+                    "High"
+                )
+
+        with c2:
+
+            if glucose < 100:
+
+                st.metric(
+                    "Glucose",
+                    "Normal"
+                )
+
+            else:
+
+                st.metric(
+                    "Glucose",
+                    "High"
+                )
+
+        with c3:
+
+            if bp < 120:
+
+                st.metric(
+                    "BP",
+                    "Healthy"
+                )
+
+            else:
+
+                st.metric(
+                    "BP",
+                    "High"
+                )
+
+        # ----------------
 
         st.subheader(
             "Suggestions"
@@ -196,16 +254,12 @@ Blood Pressure: {bp}
 • Reduce Sugar
 
 • Drink Water
-
-• Monitor Health
 """)
 
         elif probability > 0.4:
 
             st.info("""
 • Maintain Healthy Diet
-
-• Regular Exercise
 """)
 
         else:
@@ -225,5 +279,5 @@ Blood Pressure: {bp}
 st.divider()
 
 st.caption(
-    "Developed by R.PRIYADHARSHINI"
+"Developed by R.PRIYADHARSHINI"
 )
