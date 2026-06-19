@@ -5,11 +5,14 @@ import numpy as np
 # Page config
 st.set_page_config(page_title="Diabetes Risk Predictor", page_icon="🩺", layout="centered")
 
-# Custom background styling
+# Custom styling — fixed text colors
 st.markdown("""
     <style>
     .stApp {
         background-color: #f5f7fa;
+    }
+    h1, h2, h3, p, label, .stMarkdown {
+        color: #1a1a2e !important;
     }
     </style>
 """, unsafe_allow_html=True)
