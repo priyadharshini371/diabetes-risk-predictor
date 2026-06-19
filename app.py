@@ -1,106 +1,232 @@
 import streamlit as st
-import joblib
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
+import pickle
 
-# Page config
-st.set_page_config(page_title="Diabetes Risk Predictor", page_icon="🩺", layout="centered")
+# -------------------
+# PAGE CONFIG
+# -------------------
+st.set_page_config(
+    page_title="Diabetes Risk Predictor",
+    page_icon="🩺",
+    layout="wide"
+)
 
-# Custom styling - gradient background + readable text
+# -------------------
+# LOAD MODEL
+# -------------------
+model = pickle.load(open("diabetes_model.pkl", "rb"))
+
+# -------------------
+# CUSTOM CSS
+# -------------------
 st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-    }
-    h1, h2, h3, p, label, .stMarkdown {
-        color: #1a1a2e !important;
-    }
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        background-color: rgba(255, 255, 255, 0.6);
-        border-radius: 8px 8px 0 0;
-        padding: 8px 16px;
-    }
-    </style>
+<style>
+
+.stButton>button{
+width:100%;
+background:linear-gradient(90deg,#4F46E5,#7C3AED);
+color:white;
+font-size:18px;
+border-radius:10px;
+height:55px;
+border:none;
+}
+
+.result{
+padding:20px;
+border-radius:12px;
+background:#f2f6ff;
+}
+
+</style>
 """, unsafe_allow_html=True)
 
-# Load model, scaler, and dataset
-model = joblib.load('diabetes_model.pkl')
-scaler = joblib.load('scaler.pkl')
-df = pd.read_csv('diabetes.csv')
-
-# Default values for inputs removed from the UI (medians from training data)
-DEFAULT_SKIN_THICKNESS = 29
-DEFAULT_BMI = 32.0
-DEFAULT_INSULIN = 125
-
-# Sidebar
-with st.sidebar:
-    st.header("ℹ️ About")
-    st.write("This app predicts diabetes risk based on patient health metrics using a Logistic Regression model.")
-    st.write("**Dataset:** Pima Indians Diabetes Dataset")
-    st.write("**Model:** Logistic Regression")
-    st.markdown("---")
-    st.caption("Built as a mini data science project")
-
-# Main title
+# -------------------
+# TITLE
+# -------------------
 st.title("🩺 Diabetes Risk Predictor")
 
-tab1, tab2 = st.tabs(["🔍 Predict", "📊 Dataset Insights"])
+tab1, tab2 = st.tabs(["🔎 Predict","📊 Dataset Insights"])
 
-# ---------------- TAB 1: PREDICTION ----------------
+# ==========================
+# TAB 1
+# ==========================
 with tab1:
-    st.write("Enter the patient's health details below to predict diabetes risk.")
-    st.markdown("---")
+
+    st.write(
+        "Enter patient's details below."
+    )
 
     col1, col2 = st.columns(2)
+
     with col1:
-        pregnancies = st.number_input("Pregnancies", 0, 20, 0)
-        glucose = st.number_input("Glucose Level", 0, 300, 100)
+        pregnancies = st.number_input(
+            "Pregnancies",
+            0,
+            20,
+            0
+        )
+
+        glucose = st.number_input(
+            "Glucose Level",
+            0,
+            250,
+            100
+        )
+
+        bmi = st.number_input(
+            "BMI",
+            0.0,
+            70.0,
+            25.0
+        )
+
+        insulin = st.number_input(
+            "Insulin",
+            0,
+            900,
+            80
+        )
+
     with col2:
-        bp = st.number_input("Blood Pressure", 0, 200, 70)
-        age = st.number_input("Age", 0, 120, 30)
 
-    dpf = st.number_input("Diabetes Pedigree Function", 0.0, 3.0, 0.5)
-    st.markdown("---")
+        bp = st.number_input(
+            "Blood Pressure",
+            0,
+            200,
+            70
+        )
 
-    if st.button("🔍 Predict", use_container_width=True):
-        input_data = np.array([[pregnancies, glucose, bp, DEFAULT_SKIN_THICKNESS,
-                                 DEFAULT_INSULIN, DEFAULT_BMI, dpf, age]])
-        input_scaled = scaler.transform(input_data)
-        prediction = model.predict(input_scaled)[0]
+        age = st.number_input(
+            "Age",
+            1,
+            100,
+            30
+        )
 
-        st.markdown("### Result")
+        skin = st.number_input(
+            "Skin Thickness",
+            0,
+            100,
+            20
+        )
+
+        dpf = st.number_input(
+            "Diabetes Pedigree Function",
+            0.0,
+            3.0,
+            0.50
+        )
+
+    if st.button("🔍 Predict"):
+
+        input_data = np.array([[
+            pregnancies,
+            glucose,
+            bp,
+            skin,
+            insulin,
+            bmi,
+            dpf,
+            age
+        ]])
+
+        prediction = model.predict(input_data)[0]
+
+        probability = model.predict_proba(
+            input_data
+        )[0][1]
+
+        st.divider()
+
+        st.subheader("Prediction Result")
+
         if prediction == 1:
-            st.error("⚠️ **High Risk of Diabetes**")
-            st.write("Please consult a healthcare professional for further evaluation.")
+
+            st.error(
+                f"🔴 High Diabetes Risk ({probability*100:.1f}%)"
+            )
+
         else:
-            st.success("✅ **Low Risk of Diabetes**")
-            st.write("Keep maintaining a healthy lifestyle!")
 
-# ---------------- TAB 2: DATASET INSIGHTS ----------------
+            st.success(
+                f"🟢 Low Diabetes Risk ({probability*100:.1f}%)"
+            )
+
+        st.progress(
+            float(probability)
+        )
+
+        st.subheader(
+            "Patient Summary"
+        )
+
+        st.info(
+f"""
+Age: {age}
+
+Glucose: {glucose}
+
+BMI: {bmi}
+
+Blood Pressure: {bp}
+"""
+)
+
+        st.subheader(
+            "Health Suggestions"
+        )
+
+        if probability > 0.7:
+
+            st.warning("""
+• Exercise regularly
+
+• Reduce sugar intake
+
+• Drink more water
+
+• Consult doctor
+""")
+
+        elif probability > 0.4:
+
+            st.info("""
+• Maintain healthy diet
+
+• Monitor glucose
+""")
+
+        else:
+
+            st.success("""
+• Continue healthy habits
+""")
+
+# ==========================
+# TAB 2
+# ==========================
+
 with tab2:
-    st.subheader("Dataset Overview")
-    st.write(f"Total records: {df.shape[0]}")
-    st.dataframe(df.head())
 
-    st.subheader("Diabetic vs Non-Diabetic Count")
-    fig1, ax1 = plt.subplots()
-    sns.countplot(x='Outcome', data=df, ax=ax1)
-    ax1.set_xticklabels(['Non-Diabetic', 'Diabetic'])
-    st.pyplot(fig1)
+    st.subheader(
+        "Dataset Insights"
+    )
 
-    st.subheader("Glucose Levels by Outcome")
-    fig2, ax2 = plt.subplots()
-    sns.boxplot(x='Outcome', y='Glucose', data=df, ax=ax2)
-    ax2.set_xticklabels(['Non-Diabetic', 'Diabetic'])
-    st.pyplot(fig2)
+    st.write("""
+Dataset:
+Pima Indians Diabetes Dataset
 
-    st.subheader("Feature Correlation Heatmap")
-    fig3, ax3 = plt.subplots(figsize=(8, 6))
-    sns.heatmap(df.corr(), annot=True, cmap='coolwarm', ax=ax3)
-    st.pyplot(fig3)
+Target:
+0 → No Diabetes
+1 → Diabetes
+""")
+
+# FOOTER
+
+st.divider()
+
+st.caption(
+"Educational Purpose Only • Developed by R.PRIYADHARSHINI"
+)
