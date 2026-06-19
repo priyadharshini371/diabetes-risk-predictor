@@ -311,5 +311,50 @@ Logistic Regression
 # -------------------
 
 st.markdown("---")
+# -------------------------
+# FEATURES
+# -------------------------
+
+st.divider()
+
+st.subheader("✨ Features")
+
+c1,c2,c3,c4 = st.columns(4)
+
+with c1:
+    st.info(
+"""
+🧠 AI Prediction
+
+Instant Risk Analysis
+"""
+)
+
+with c2:
+    st.info(
+"""
+📊 Analytics
+
+Visual Dashboard
+"""
+)
+
+with c3:
+    st.info(
+"""
+📄 Reports
+
+Easy Summary
+"""
+)
+
+with c4:
+    st.info(
+"""
+💡 Suggestions
+
+Health Guidance
+"""
+)
 
 
