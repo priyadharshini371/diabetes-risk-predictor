@@ -281,3 +281,50 @@ st.divider()
 st.caption(
 "Developed by R.PRIYADHARSHINI"
 )
+# -------------------------
+# VISUAL INSIGHTS
+# -------------------------
+
+st.divider()
+
+st.subheader(
+"📊 Health Insights"
+)
+
+c1,c2,c3 = st.columns(3)
+
+with c1:
+
+    st.metric(
+        "Age",
+        age
+    )
+
+with c2:
+
+    st.metric(
+        "BMI",
+        bmi
+    )
+
+with c3:
+
+    st.metric(
+        "Glucose",
+        glucose
+    )
+
+st.bar_chart(
+{
+"Health Values":[
+glucose,
+bp,
+bmi,
+age
+]
+}
+)
+
+st.caption(
+"Comparison of entered values"
+)
