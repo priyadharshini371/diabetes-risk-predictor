@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 # ------------------------
-# PAGE
+# PAGE CONFIG
 # ------------------------
 
 st.set_page_config(
@@ -20,7 +20,7 @@ with open("diabetes_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 # ------------------------
-# LIGHT BLUE + WHITE THEME
+# CUSTOM CSS
 # ------------------------
 
 st.markdown("""
@@ -29,29 +29,55 @@ st.markdown("""
 /* Background */
 
 .stApp{
-background:linear-gradient(
-135deg,
-#E6F7FF,
-#FFFFFF
-);
+background:#EAF6FF;
 }
 
 /* Title */
 
 h1{
+color:#0B2447 !important;
 text-align:center;
-color:#0F172A;
+font-size:58px;
+font-weight:700;
+}
+
+/* Text */
+
+p,label,h2,h3{
+color:#0F172A !important;
 }
 
 /* Inputs */
 
 .stNumberInput input{
 
-background:white;
+background:white !important;
 
-color:black;
+color:black !important;
+
+border:1px solid #BFDFFF !important;
 
 border-radius:12px;
+
+}
+
+/* Tabs */
+
+button[data-baseweb="tab"]{
+
+background:white !important;
+
+color:#0F172A !important;
+
+border-radius:10px;
+
+padding:10px;
+
+}
+
+button[aria-selected="true"]{
+
+background:#BFDBFE !important;
 
 }
 
@@ -61,15 +87,11 @@ border-radius:12px;
 
 width:100%;
 
-height:55px;
+height:60px;
 
-background:linear-gradient(
-90deg,
-#60A5FA,
-#BFDBFE
-);
+background:#60A5FA !important;
 
-color:#0F172A;
+color:white !important;
 
 font-size:18px;
 
@@ -77,25 +99,19 @@ font-weight:bold;
 
 border:none;
 
-border-radius:15px;
+border-radius:14px;
 
 }
 
-/* Result */
+/* Alerts */
 
 div[data-testid="stAlert"]{
 
+background:white !important;
+
+color:black !important;
+
 border-radius:15px;
-
-}
-
-/* Tabs */
-
-button[data-baseweb="tab"]{
-
-background:white;
-
-border-radius:10px;
 
 }
 
@@ -107,13 +123,13 @@ border-radius:10px;
 st.title("🩺 Diabetes Risk Predictor")
 
 tab1, tab2 = st.tabs([
-"🔎 Predict",
-"📊 Dataset Insights"
+    "🔎 Predict",
+    "📊 Dataset Insights"
 ])
 
-# ======================
-# TAB 1
-# ======================
+# ==========================
+# PREDICT
+# ==========================
 
 with tab1:
 
@@ -217,17 +233,18 @@ with tab1:
             if prediction == 1:
 
                 st.error(
-                    f"🔴 High Diabetes Risk"
+                    "🔴 High Diabetes Risk"
                 )
 
             else:
 
                 st.success(
-                    f"🟢 Low Diabetes Risk"
+                    "🟢 Low Diabetes Risk"
                 )
 
-            st.write(
-                f"Risk Probability: {probability*100:.2f}%"
+            st.metric(
+                "Risk Probability",
+                f"{probability*100:.1f}%"
             )
 
             st.progress(
@@ -251,33 +268,33 @@ Blood Pressure: {bp}
 )
 
             st.subheader(
-                "Health Suggestions"
+                "Suggestions"
             )
 
             if probability > 0.7:
 
                 st.warning("""
-Reduce sugar intake
+• Exercise Daily
 
-Exercise daily
+• Reduce Sugar
 
-Drink water
+• Stay Hydrated
 
-Consult doctor
+• Consult Doctor
 """)
 
             elif probability > 0.4:
 
                 st.info("""
-Maintain healthy diet
+• Maintain Healthy Diet
 
-Monitor glucose
+• Monitor Health
 """)
 
             else:
 
                 st.success("""
-Healthy lifestyle maintained
+• Continue Healthy Lifestyle
 """)
 
         except Exception as e:
@@ -286,21 +303,21 @@ Healthy lifestyle maintained
                 f"Error: {e}"
             )
 
-# ======================
-# TAB 2
-# ======================
+# ==========================
+# DATASET
+# ==========================
 
 with tab2:
 
     st.subheader(
-        "Dataset Insights"
+        "Dataset Information"
     )
 
-    st.write("""
+    st.info("""
 Dataset:
 Pima Indians Diabetes Dataset
 
-Outcome:
+Target:
 
 0 → Non Diabetic
 
@@ -312,5 +329,5 @@ Outcome:
 st.divider()
 
 st.caption(
-"Educational Purpose Only • Developed by R.PRIYADHARSHINI"
+"Developed by R.PRIYADHARSHINI • Educational Purpose Only"
 )
