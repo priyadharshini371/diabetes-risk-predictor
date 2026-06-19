@@ -198,6 +198,48 @@ with tab2:
 
             st.divider()
 
+st.subheader("✨ Features")
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.markdown("""
+### 🧠
+
+AI Prediction
+
+Instant diabetes prediction
+""")
+
+with c2:
+    st.markdown("""
+### 📊
+
+Analytics
+
+Visual health insights
+""")
+
+with c3:
+    st.markdown("""
+### 📄
+
+Reports
+
+Easy result summary
+""")
+
+with c4:
+    st.markdown("""
+### 💡
+
+Suggestions
+
+Basic health guidance
+""")
+
+st.divider()
+
             if prediction == 1:
 
                 st.error(
