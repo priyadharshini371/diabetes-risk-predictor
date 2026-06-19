@@ -23,7 +23,59 @@ with open("diabetes_model.pkl", "rb") as f:
 # TITLE
 # -------------------
 
-st.title("🩺 Diabetes Risk Predictor")
+# -------------------------
+# HERO SECTION
+# -------------------------
+
+st.markdown("""
+<div style='
+padding:40px;
+background:linear-gradient(135deg,#E8F7FF,#FFFFFF);
+border-radius:20px;
+text-align:center;
+'>
+
+<h1 style='color:#1E3A5F;'>
+🩺 Diabetes Risk Predictor
+</h1>
+
+<h3 style='color:#4B5563;'>
+Predict Early. Stay Healthy.
+</h3>
+
+<p style='font-size:18px;color:#6B7280;'>
+
+AI-powered system that analyzes patient health information
+and estimates diabetes risk instantly.
+
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+st.write("")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.info(
+"""
+🧠 AI Prediction
+
+Get diabetes risk instantly
+"""
+)
+
+with col2:
+    st.info(
+"""
+📊 Health Insights
+
+Understand patient health
+"""
+)
+
+st.divider()
 
 tab1, tab2, tab3 = st.tabs([
     "🏠 Home",
@@ -50,10 +102,6 @@ Features:
 - Health Suggestions
 - Interactive UI
 """)
-
-    st.info(
-        "Educational Purpose Only"
-    )
 
 # ===================
 # PREDICT
@@ -216,14 +264,10 @@ Pima Indians Diabetes Dataset
 Algorithm:
 Logistic Regression
 
-Developer:
-R.PRIYADHARSHINI
 """)
 
 # -------------------
 
 st.markdown("---")
 
-st.caption(
-"Developed by R.PRIYADHARSHINI"
-)
+
