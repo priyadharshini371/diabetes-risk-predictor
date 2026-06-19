@@ -2,359 +2,196 @@ import streamlit as st
 import pickle
 import numpy as np
 
-# -------------------
-# PAGE CONFIG
-# -------------------
+# -------------------------
+# PAGE SETTINGS
+# -------------------------
 
 st.set_page_config(
     page_title="Diabetes Risk Predictor",
     page_icon="🩺",
-    layout="wide"
+    layout="centered"
 )
 
-# -------------------
+# -------------------------
 # LOAD MODEL
-# -------------------
+# -------------------------
 
-with open("diabetes_model.pkl", "rb") as f:
-    model = pickle.load(f)
+try:
+    with open("diabetes_model.pkl", "rb") as f:
+        model = pickle.load(f)
 
-# -------------------
-# TITLE
-# -------------------
+except:
+    st.error("Model file not found")
+    st.stop()
 
 # -------------------------
 # HERO SECTION
 # -------------------------
 
+st.title("🩺 Diabetes Risk Predictor")
+
 st.markdown("""
-<div style='
-padding:40px;
-background:linear-gradient(135deg,#E8F7FF,#FFFFFF);
-border-radius:20px;
-text-align:center;
-'>
+Predict Early • Stay Healthy
 
-<h1 style='color:#1E3A5F;'>
-🩺 Diabetes Risk Predictor
-</h1>
+This application predicts diabetes risk based on health details.
+""")
 
-<h3 style='color:#4B5563;'>
-Predict Early. Stay Healthy.
-</h3>
+st.info(
+    "Educational Purpose Only"
+)
 
-<p style='font-size:18px;color:#6B7280;'>
+st.divider()
 
-AI-powered system that analyzes patient health information
-and estimates diabetes risk instantly.
-
-</p>
-
-</div>
-""", unsafe_allow_html=True)
-
-st.write("")
+# -------------------------
+# INPUTS
+# -------------------------
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.info(
-"""
-🧠 AI Prediction
 
-Get diabetes risk instantly
-"""
-)
+    pregnancies = st.number_input(
+        "Pregnancies",
+        min_value=0,
+        max_value=20,
+        value=0
+    )
+
+    glucose = st.number_input(
+        "Glucose",
+        min_value=0,
+        max_value=250,
+        value=100
+    )
+
+    bmi = st.number_input(
+        "BMI",
+        min_value=0.0,
+        max_value=70.0,
+        value=25.0
+    )
+
+    insulin = st.number_input(
+        "Insulin",
+        min_value=0,
+        max_value=900,
+        value=80
+    )
 
 with col2:
-    st.info(
-"""
-📊 Health Insights
 
-Understand patient health
-"""
-)
-
-st.divider()
-
-tab1, tab2, tab3 = st.tabs([
-    "🏠 Home",
-    "🩺 Predict",
-    "📊 About"
-])
-
-# ===================
-# HOME
-# ===================
-
-with tab1:
-
-    st.header(
-        "AI-Based Diabetes Risk Prediction"
+    bp = st.number_input(
+        "Blood Pressure",
+        min_value=0,
+        max_value=200,
+        value=70
     )
 
-    st.write("""
-This project predicts diabetes risk using Machine Learning.
+    age = st.number_input(
+        "Age",
+        min_value=1,
+        max_value=100,
+        value=30
+    )
 
-Features:
-- Diabetes Prediction
-- Risk Probability
-- Health Suggestions
-- Interactive UI
-""")
+    skin = st.number_input(
+        "Skin Thickness",
+        min_value=0,
+        max_value=100,
+        value=20
+    )
 
-# ===================
+    dpf = st.number_input(
+        "Diabetes Pedigree",
+        min_value=0.0,
+        max_value=3.0,
+        value=0.5
+    )
+
+# -------------------------
 # PREDICT
-# ===================
+# -------------------------
 
-with tab2:
+if st.button("🔍 Predict Risk"):
 
-    col1, col2 = st.columns(2)
+    try:
 
-    with col1:
+        input_data = np.array([[
+            pregnancies,
+            glucose,
+            bp,
+            skin,
+            insulin,
+            bmi,
+            dpf,
+            age
+        ]])
 
-        pregnancies = st.number_input(
-            "Pregnancies",
-            0,
-            20,
-            0
+        prediction = model.predict(
+            input_data
+        )[0]
+
+        probability = model.predict_proba(
+            input_data
+        )[0][1]
+
+        st.divider()
+
+        st.subheader(
+            "Prediction Result"
         )
 
-        glucose = st.number_input(
-            "Glucose",
-            0,
-            250,
-            100
-        )
-
-        bmi = st.number_input(
-            "BMI",
-            0.0,
-            70.0,
-            25.0
-        )
-
-        insulin = st.number_input(
-            "Insulin",
-            0,
-            900,
-            80
-        )
-
-    with col2:
-
-        bp = st.number_input(
-            "Blood Pressure",
-            0,
-            200,
-            70
-        )
-
-        age = st.number_input(
-            "Age",
-            1,
-            100,
-            30
-        )
-
-        skin = st.number_input(
-            "Skin Thickness",
-            0,
-            100,
-            20
-        )
-
-        dpf = st.number_input(
-            "Diabetes Pedigree",
-            0.0,
-            3.0,
-            0.5
-        )
-
-    if st.button(
-        "Predict"
-    ):
-
-        try:
-
-            data = np.array([[
-                pregnancies,
-                glucose,
-                bp,
-                skin,
-                insulin,
-                bmi,
-                dpf,
-                age
-            ]])
-
-            prediction = model.predict(
-                data
-            )[0]
-
-            probability = model.predict_proba(
-                data
-            )[0][1]
-
-            st.divider()
-
-st.subheader("✨ Features")
-
-c1, c2, c3, c4 = st.columns(4)
-
-with c1:
-    st.markdown("""
-### 🧠
-
-AI Prediction
-
-Instant diabetes prediction
-""")
-
-with c2:
-    st.markdown("""
-### 📊
-
-Analytics
-
-Visual health insights
-""")
-
-with c3:
-    st.markdown("""
-### 📄
-
-Reports
-
-Easy result summary
-""")
-
-with c4:
-    st.markdown("""
-### 💡
-
-Suggestions
-
-Basic health guidance
-""")
-
-st.divider()
-
-            if prediction == 1:
-
-                st.error(
-                    "🔴 High Diabetes Risk"
-                )
-
-            else:
-
-                st.success(
-                    "🟢 Low Diabetes Risk"
-                )
-
-            st.metric(
-                "Risk Probability",
-                f"{probability*100:.1f}%"
-            )
-
-            st.progress(
-                float(probability)
-            )
-
-            st.subheader(
-                "Suggestions"
-            )
-
-            if probability > 0.7:
-
-                st.warning("""
-• Exercise regularly
-
-• Reduce sugar
-
-• Stay hydrated
-
-• Consult doctor
-""")
-
-            else:
-
-                st.success("""
-• Maintain healthy lifestyle
-""")
-
-        except Exception as e:
+        if prediction == 1:
 
             st.error(
-                f"Error: {e}"
+                "🔴 High Diabetes Risk"
             )
 
-# ===================
-# ABOUT
-# ===================
+        else:
 
-with tab3:
+            st.success(
+                "🟢 Low Diabetes Risk"
+            )
 
-    st.header(
-        "Project Information"
-    )
+        st.metric(
+            "Risk Probability",
+            f"{probability*100:.1f}%"
+        )
 
-    st.write("""
-Dataset:
-Pima Indians Diabetes Dataset
+        st.progress(
+            float(probability)
+        )
 
-Algorithm:
-Logistic Regression
+        st.subheader(
+            "Suggestions"
+        )
 
+        if probability > 0.7:
+
+            st.warning("""
+• Exercise Daily
+
+• Reduce Sugar
+
+• Drink Water
 """)
 
-# -------------------
+        else:
 
-st.markdown("---")
-# -------------------------
-# FEATURES
+            st.success("""
+• Maintain Healthy Lifestyle
+""")
+
+    except Exception as e:
+
+        st.error(
+            f"Prediction Error: {e}"
+        )
+
 # -------------------------
 
 st.divider()
 
-st.subheader("✨ Features")
-
-c1,c2,c3,c4 = st.columns(4)
-
-with c1:
-    st.info(
-"""
-🧠 AI Prediction
-
-Instant Risk Analysis
-"""
+st.caption(
+    "Developed by R.PRIYADHARSHINI"
 )
-
-with c2:
-    st.info(
-"""
-📊 Analytics
-
-Visual Dashboard
-"""
-)
-
-with c3:
-    st.info(
-"""
-📄 Reports
-
-Easy Summary
-"""
-)
-
-with c4:
-    st.info(
-"""
-💡 Suggestions
-
-Health Guidance
-"""
-)
-
-
