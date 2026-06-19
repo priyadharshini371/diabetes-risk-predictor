@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 # -------------------------
-# PAGE SETTINGS
+# PAGE
 # -------------------------
 
 st.set_page_config(
@@ -21,29 +21,27 @@ try:
         model = pickle.load(f)
 
 except:
-    st.error("Model file not found")
+    st.error("Model file missing")
     st.stop()
 
 # -------------------------
-# HERO SECTION
+# HERO
 # -------------------------
 
 st.title("🩺 Diabetes Risk Predictor")
 
-st.markdown("""
-Predict Early • Stay Healthy
-
-This application predicts diabetes risk based on health details.
-""")
-
-st.info(
-    "Educational Purpose Only"
+st.subheader(
+    "Predict Early • Stay Healthy"
 )
+
+st.write("""
+This application predicts diabetes risk based on patient health details.
+""")
 
 st.divider()
 
 # -------------------------
-# INPUTS
+# INPUT SECTION
 # -------------------------
 
 col1, col2 = st.columns(2)
@@ -52,60 +50,60 @@ with col1:
 
     pregnancies = st.number_input(
         "Pregnancies",
-        min_value=0,
-        max_value=20,
-        value=0
+        0,
+        20,
+        0
     )
 
     glucose = st.number_input(
         "Glucose",
-        min_value=0,
-        max_value=250,
-        value=100
+        0,
+        250,
+        100
     )
 
     bmi = st.number_input(
         "BMI",
-        min_value=0.0,
-        max_value=70.0,
-        value=25.0
+        0.0,
+        70.0,
+        25.0
     )
 
     insulin = st.number_input(
         "Insulin",
-        min_value=0,
-        max_value=900,
-        value=80
+        0,
+        900,
+        80
     )
 
 with col2:
 
     bp = st.number_input(
         "Blood Pressure",
-        min_value=0,
-        max_value=200,
-        value=70
+        0,
+        200,
+        70
     )
 
     age = st.number_input(
         "Age",
-        min_value=1,
-        max_value=100,
-        value=30
+        1,
+        100,
+        30
     )
 
     skin = st.number_input(
         "Skin Thickness",
-        min_value=0,
-        max_value=100,
-        value=20
+        0,
+        100,
+        20
     )
 
     dpf = st.number_input(
         "Diabetes Pedigree",
-        min_value=0.0,
-        max_value=3.0,
-        value=0.5
+        0.0,
+        3.0,
+        0.5
     )
 
 # -------------------------
@@ -116,7 +114,7 @@ if st.button("🔍 Predict Risk"):
 
     try:
 
-        input_data = np.array([[
+        data = np.array([[
             pregnancies,
             glucose,
             bp,
@@ -128,11 +126,11 @@ if st.button("🔍 Predict Risk"):
         ]])
 
         prediction = model.predict(
-            input_data
+            data
         )[0]
 
         probability = model.predict_proba(
-            input_data
+            data
         )[0][1]
 
         st.divider()
@@ -162,6 +160,30 @@ if st.button("🔍 Predict Risk"):
             float(probability)
         )
 
+        # -----------------
+        # SUMMARY
+        # -----------------
+
+        st.subheader(
+            "Patient Summary"
+        )
+
+        st.info(
+f"""
+Age: {age}
+
+Glucose: {glucose}
+
+BMI: {bmi}
+
+Blood Pressure: {bp}
+"""
+)
+
+        # -----------------
+        # SUGGESTIONS
+        # -----------------
+
         st.subheader(
             "Suggestions"
         )
@@ -174,12 +196,22 @@ if st.button("🔍 Predict Risk"):
 • Reduce Sugar
 
 • Drink Water
+
+• Monitor Health
+""")
+
+        elif probability > 0.4:
+
+            st.info("""
+• Maintain Healthy Diet
+
+• Regular Exercise
 """)
 
         else:
 
             st.success("""
-• Maintain Healthy Lifestyle
+• Continue Healthy Lifestyle
 """)
 
     except Exception as e:
