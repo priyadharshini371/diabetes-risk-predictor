@@ -1,10 +1,9 @@
 import streamlit as st
 import pickle
 import numpy as np
-import pandas as pd
 
 # -------------------
-# PAGE
+# PAGE CONFIG
 # -------------------
 
 st.set_page_config(
@@ -14,74 +13,42 @@ st.set_page_config(
 )
 
 # -------------------
-# MODEL
+# LOAD MODEL
 # -------------------
 
-with open("diabetes_model.pkl","rb") as f:
-    model=pickle.load(f)
+with open("diabetes_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 # -------------------
-# STYLE
-# -------------------
-
-st.markdown("""
-<style>
-
-.stApp{
-background:#F5FAFF;
-}
-
-h1,h2,h3{
-color:#1E3A5F;
-}
-
-.stButton>button{
-width:100%;
-height:50px;
-background:#4F8EF7;
-color:white;
-border:none;
-border-radius:12px;
-font-size:18px;
-}
-
-.stNumberInput input{
-background:white;
-color:black;
-border-radius:10px;
-}
-
-</style>
-""",unsafe_allow_html=True)
-
+# TITLE
 # -------------------
 
 st.title("🩺 Diabetes Risk Predictor")
 
-pages=st.tabs([
-"🏠 Home",
-"🩺 Predict",
-"📊 Dataset"
+tab1, tab2, tab3 = st.tabs([
+    "🏠 Home",
+    "🩺 Predict",
+    "📊 About"
 ])
 
 # ===================
 # HOME
 # ===================
 
-with pages[0]:
+with tab1:
 
-    st.subheader(
-        "AI Based Diabetes Risk Prediction"
+    st.header(
+        "AI-Based Diabetes Risk Prediction"
     )
 
     st.write("""
-Predict diabetes risk using patient health inputs.
+This project predicts diabetes risk using Machine Learning.
 
 Features:
-- Risk Prediction
-- Probability Score
+- Diabetes Prediction
+- Risk Probability
 - Health Suggestions
-- Dataset Information
+- Interactive UI
 """)
 
     st.info(
@@ -92,64 +59,64 @@ Features:
 # PREDICT
 # ===================
 
-with pages[1]:
+with tab2:
 
-    c1,c2=st.columns(2)
+    col1, col2 = st.columns(2)
 
-    with c1:
+    with col1:
 
-        pregnancies=st.number_input(
+        pregnancies = st.number_input(
             "Pregnancies",
             0,
             20,
             0
         )
 
-        glucose=st.number_input(
+        glucose = st.number_input(
             "Glucose",
             0,
             250,
             100
         )
 
-        bmi=st.number_input(
+        bmi = st.number_input(
             "BMI",
             0.0,
             70.0,
             25.0
         )
 
-        insulin=st.number_input(
+        insulin = st.number_input(
             "Insulin",
             0,
             900,
             80
         )
 
-    with c2:
+    with col2:
 
-        bp=st.number_input(
+        bp = st.number_input(
             "Blood Pressure",
             0,
             200,
             70
         )
 
-        age=st.number_input(
+        age = st.number_input(
             "Age",
             1,
             100,
             30
         )
 
-        skin=st.number_input(
+        skin = st.number_input(
             "Skin Thickness",
             0,
             100,
             20
         )
 
-        dpf=st.number_input(
+        dpf = st.number_input(
             "Diabetes Pedigree",
             0.0,
             3.0,
@@ -157,12 +124,12 @@ with pages[1]:
         )
 
     if st.button(
-        "🔍 Predict"
+        "Predict"
     ):
 
         try:
 
-            data=np.array([[
+            data = np.array([[
                 pregnancies,
                 glucose,
                 bp,
@@ -173,97 +140,90 @@ with pages[1]:
                 age
             ]])
 
-            pred=model.predict(
+            prediction = model.predict(
                 data
             )[0]
 
-            prob=model.predict_proba(
+            probability = model.predict_proba(
                 data
             )[0][1]
 
             st.divider()
 
-            if pred==1:
+            if prediction == 1:
 
                 st.error(
-                    "🔴 High Risk"
+                    "🔴 High Diabetes Risk"
                 )
 
             else:
 
                 st.success(
-                    "🟢 Low Risk"
+                    "🟢 Low Diabetes Risk"
                 )
 
             st.metric(
-                "Risk %",
-                f"{prob*100:.1f}%"
+                "Risk Probability",
+                f"{probability*100:.1f}%"
             )
 
             st.progress(
-                float(prob)
+                float(probability)
             )
 
             st.subheader(
                 "Suggestions"
             )
 
-            if prob>0.7:
+            if probability > 0.7:
 
                 st.warning("""
-Exercise Daily
+• Exercise regularly
 
-Reduce Sugar
+• Reduce sugar
 
-Consult Doctor
+• Stay hydrated
+
+• Consult doctor
 """)
 
             else:
 
                 st.success("""
-Maintain Healthy Lifestyle
+• Maintain healthy lifestyle
 """)
 
-        except:
+        except Exception as e:
 
             st.error(
-                "Prediction Failed"
+                f"Error: {e}"
             )
 
 # ===================
-# DATASET
+# ABOUT
 # ===================
 
-with pages[2]:
+with tab3:
 
-    st.subheader(
-        "Dataset Overview"
+    st.header(
+        "Project Information"
     )
 
-    data={
-        "Class":[
-            "Non Diabetic",
-            "Diabetic"
-        ],
-        "Value":[
-            500,
-            268
-        ]
-    }
-
-    st.dataframe(
-        pd.DataFrame(
-            data
-        )
-    )
-
-    st.info("""
+    st.write("""
 Dataset:
 Pima Indians Diabetes Dataset
 
-768 Records
+Algorithm:
+Logistic Regression
+
+Developer:
+R.PRIYADHARSHINI
 """)
 
 # -------------------
 
 st.markdown("---")
+
+st.caption(
+"Developed by R.PRIYADHARSHINI"
+)
